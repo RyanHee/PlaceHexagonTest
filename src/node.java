@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class node extends JButton {
 
-    private int id;
+    //private int id;
     private Polygon hexagon;
     private String val;
     private node[] neighbors;
@@ -15,7 +15,7 @@ public class node extends JButton {
     private BufferedImage img, outline;
     public node(String label){
         super(label);
-        id=0;
+        //id=0;
         xPoints = new int[6];
         yPoints = new int[6];
         neighbors=new node[6];
@@ -32,22 +32,15 @@ public class node extends JButton {
         }
     }
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int i){
-        id=i;
-        id=0;
-    }
     public node(String label, String s){
         super(label);
         xPoints = new int[6];
         yPoints = new int[6];
         neighbors=new node[6];
         val=s;
-        System.out.println(Arrays.toString(xPoints));
-        System.out.println(Arrays.toString(yPoints));
+        //System.out.println(Arrays.toString(xPoints));
+        //System.out.println(Arrays.toString(yPoints));
         setOpaque(false);
         setContentAreaFilled(false);
         setBorderPainted(false);
@@ -71,12 +64,13 @@ public class node extends JButton {
             }
             n.setNeighbor(this, num);
         }
+        updateNeighbor();
     }
 
 
     public void setNeighbor(node n, int idx){
         if (neighbors[idx]==null){
-            System.out.println("here");
+            //System.out.println("here");
             neighbors[idx]=n;
             if (idx<3){
                 n.setNeighbor(this, idx+3);
@@ -86,8 +80,8 @@ public class node extends JButton {
             }
         }
         else if (!neighbors[idx].getPlaced()){
-            neighbors[idx]=n;
-            System.out.println("tf");
+            //neighbors[idx]=n;
+            //System.out.println("tf");
             if (this.getPlaced()){
                 if (idx<3){
                     n.setNeighbor(this, idx+3);
@@ -99,16 +93,36 @@ public class node extends JButton {
 
         }
         else{
-            System.out.println("this place is placed!!!");
+            //System.out.println("this place is placed!!!");
         }
     }
 
+
+    public boolean hasEmptyNeighbors(){
+        for (node n:neighbors){
+            if (n==null){
+                continue;
+            }
+            if (n.getVal()==null){
+                return true;
+            }
+        }
+        return false;
+    }
     public String getVal(){
         return val;
     }
     public void setVal(String v){
+        if (val!=null && !val.equals("")){
+            return;
+        }
+        if (v.equals("empty")){
+            val="empty";
+            updateNeighbor();
+        }
         val=v;
         isPlaced=true;
+        System.out.println(val);
         try{
             img = ImageIO.read(node.class.getResource("tile.png"));
         }
@@ -117,20 +131,32 @@ public class node extends JButton {
         }
         for (int i=0;i<6;i++){
             if (neighbors[i]==null){
+                System.out.println(toString()+" "+i+" null!");
                 neighbors[i]=new node("");
+                node neighbor = neighbors[i];
+                int num;
+                if (i<3){
+                    num=i+3;
+                }
+                else{
+                    num=i-3;
+                }
+                neighbor.setNeighbor(this, num);
             }
-            node neighbor = neighbors[i];
-            int num;
-            if (i<3){
-                num=i+3;
-            }
-            else{
-                num=i-3;
-            }
-            neighbor.setNeighbor(this, num);
+
         }
+        updateNeighbor();
     }
 
+
+    public int neighborCount(){
+        int i=0;
+        for (node n:neighbors){
+            if (n!=null)
+                i++;
+        }
+        return i;
+    }
     public void placed(){
         isPlaced=true;
         try{
@@ -140,26 +166,7 @@ public class node extends JButton {
             System.out.println("fuck");
         }
     }
-    /*
-    public void drawImg(Graphics g,int xx, int yy, int w, int h){
 
-        for (int i=0;i<6;i++){
-            node n = neighbors[i];
-            //System.out.println(i);
-            if (n==null){
-                //System.out.println("bitch");
-            }
-            else{
-                //System.out.println("wtf");
-                //System.out.println(n);
-                if (!n.getPlaced()){
-                    n.drawImg(g, nx[i],ny[i],w,h);
-                }
-
-            }
-        }
-    }
-    */
     public node[] getNeighbors(){
         return neighbors;
     }
@@ -179,6 +186,24 @@ public class node extends JButton {
             yPoints[i] = y0 + (int)Math.round((getHeight()/2)*Math.cos(v));
         }
         g.drawPolygon(xPoints, yPoints,6);
+    }
+
+    public void updateNeighbor(){
+        for (int i=0;i<6;i++){
+            node neighbor = neighbors[i];
+            node neighbor1;
+            if (i==5){
+                neighbor1=neighbors[0];
+            }
+            else{
+                neighbor1=neighbors[i+1];
+            }
+            int num=i+2;
+            if (i>3){
+                num-=6;
+            }
+            neighbor.setNeighbor(neighbor1, num);
+        }
     }
 
     protected void paintComponent(Graphics g) {
@@ -202,6 +227,7 @@ public class node extends JButton {
         //drawImg(g, this.getX(), this.getY(), getWidth(), getHeight());
         super.paintComponent(g);
     }
+
 
     public node get(int i){
         if (i<6){
@@ -242,6 +268,5 @@ public class node extends JButton {
             return true;
         }
         return false;
-
     }
 }

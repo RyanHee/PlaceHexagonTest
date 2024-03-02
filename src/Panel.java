@@ -14,6 +14,7 @@ import java.util.HashMap;
 public class Panel extends JPanel implements ActionListener {
     //private int[]xlst;
     //private int[]ylst;
+    private int intt;
     private HashMap<Integer, Boolean>map;
     private ArrayList<node>visted;
     private int[]xPoints, yPoints;
@@ -22,6 +23,7 @@ public class Panel extends JPanel implements ActionListener {
     private node test, n1;
     //private HexButton hexButton;
     public Panel(){
+        intt=0;
         try{
             img = ImageIO.read(Panel.class.getResource("tile.png"));
             img1 = ImageIO.read(Panel.class.getResource("tile1.png"));
@@ -91,10 +93,6 @@ public class Panel extends JPanel implements ActionListener {
         g.drawImage(img1, xPoints[0]-w, yPoints[1]-h, w,h,null);
         //左
         g.drawImage(img1, xPoints[5]-w, yPoints[0], w,h,null);
-
-
-
-        w=58;
         //test.setBounds(800*getWidth()/1600, 450*getHeight()/900, w, h);
         //System.out.println(test.getX()+" "+test.getY());
         //test.paintComponent(g);
@@ -104,6 +102,7 @@ public class Panel extends JPanel implements ActionListener {
 
     private void putButtons(Graphics g, node n, int x, int y, int w, int h, int id){
         int temp;
+
         if (n==null){
             return;
         }
@@ -111,43 +110,70 @@ public class Panel extends JPanel implements ActionListener {
             return;
         }
         //System.out.println("here? "+n);
-        int[]xlst=new int[6];
-        int[]ylst=new int[6];
+        //System.out.println(n+" "+x+", "+y);
+        double[]xlst=new double[6];
+        double[]ylst=new double[6];
         for(int i = 0; i < 6; i++) {
             double v = i*Math.PI/3;
             //use this for ^
-            xlst[i] = x+w/2+(int)Math.round(-w/2*Math.cos(v + Math.PI/2));
-            ylst[i] = y+h/2+(int)Math.round(-h/2*Math.sin(v + Math.PI/2));
+            xlst[i] = x+w/2-w/2*Math.cos(v + Math.PI/2);
+            ylst[i] = y+h/2-h/2*Math.sin(v + Math.PI/2);
             //use this for ------
             //xPoints[i] = x + (int)Math.round(-width*Math.sin(v + Math.PI/2));
             //yPoints[i] = y + (int)Math.round(-height*Math.cos(v + Math.PI/2));
         }
         //g.fillPolygon(xlst,ylst,6);
         //id=temp;
-        int er=w*50*4/58/58;
+        double er=w*50*4/58/58;
+        String s="hh"+id;
+        if (n.getVal()!=null){
+            s=n.getVal();
+            n.updateNeighbor();
+        }
+        else{
+            if (n.neighborCount()==6){
+                n.updateNeighbor();
+            }
+        }
+        System.out.println(s+" "+n.neighborCount());
+        g.drawImage(n.getImg(), x+3, y, w*50/58, h,null);
+        g.drawImage(outline, x+3, y, w*50/58, h, null);
+        //g.drawString(s, x+15, y+30);
 
-        g.drawImage(n.getImg(), x+er, y, w*50/58, h,null);
-        g.drawImage(outline, x+er, y, w*50/58, h, null);
         n.addActionListener(this);
         add(n);
         n.setBounds(x,y,w,h);
         visted.add(n);
         id++;
-        er=w*50*6/58/58;
+
         int[]nx=new int[6];
         int[]ny=new int[6];
-        nx[0]=xlst[0]-er;
-        nx[1]=xlst[1]-er;
-        nx[2]=xlst[0]-er;
-        nx[3]=xlst[0]-w+er;
-        nx[4]=xlst[5]-w+er;
-        nx[5]=xlst[0]-w+er;
-        ny[0]=ylst[1]-h;
-        ny[1]=ylst[0];
-        ny[2]=ylst[2];
-        ny[3]=ylst[2];
-        ny[4]=ylst[0];
-        ny[5]=ylst[1]-h;
+        nx[0]=x+25;
+        nx[1]=x+50;
+        nx[2]=x+25;
+        nx[3]=x-25;
+        nx[4]=x-50;
+        nx[5]=x-25;
+        ny[0]=y-44;
+        ny[1]=y;
+        ny[2]=y+44;
+        ny[3]=y+44;
+        ny[4]=y;
+        ny[5]=y-44;
+        /*
+        nx[0]= (int) Math.round(xlst[0]-er);
+        nx[1]=(int) Math.round(xlst[1]-er);
+        nx[2]=(int) Math.round(xlst[0]-er);
+        nx[3]=(int) Math.round(xlst[0]-w+er);
+        nx[4]=(int) Math.round(xlst[5]-w+er);
+        nx[5]=(int) Math.round(xlst[0]-w+er);
+        ny[0]=(int)Math.round(ylst[1]-h);
+        ny[1]=(int)Math.round(ylst[0]);
+        ny[2]=(int)Math.round(ylst[2]);
+        ny[3]=(int)Math.round(ylst[4]);
+        ny[4]=(int)Math.round(ylst[0]);
+        ny[5]=(int)Math.round(ylst[1]-h);
+        */
         //System.out.println(Arrays.toString(nx));
         //System.out.println(Arrays.toString(ny));
         for (int i=0;i<6;i++){
@@ -162,6 +188,7 @@ public class Panel extends JPanel implements ActionListener {
         }
         else{
             node n=(node) e.getSource();
+            boolean setval=false;
             if (n!=null&&!n.getPlaced()){
                 //System.out.println("plz work");
                 System.out.println(n);
@@ -169,8 +196,24 @@ public class Panel extends JPanel implements ActionListener {
                 for (int i=0;i<6;i++){
                     node neighbor = neighbors[i];
                     if (neighbor!=null && neighbor.getPlaced()){
-                        n.setVal("sheeeesh");
+                        n.setVal("shh"+intt);
+                        intt++;
                         System.out.println(n.getVal());
+                        int num;
+                        if (i<3){
+                            num=i+3;
+                        }
+                        else{
+                            num=i-3;
+                        }
+                        setval=true;
+                        //neighbor.setNeighbor(n, num);
+                    }
+                }
+                /*
+                if(setval){
+                    for (int i=0;i<6;i++){
+                        node neighbor = neighbors[i];
                         int num;
                         if (i<3){
                             num=i+3;
@@ -181,6 +224,7 @@ public class Panel extends JPanel implements ActionListener {
                         neighbor.setNeighbor(n, num);
                     }
                 }
+                 */
             }
         }
         repaint();
