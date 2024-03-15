@@ -2,30 +2,29 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 
-public class node extends JButton {
+public class Node extends JButton {
 
     //private int id;
     private Polygon hexagon;
     private String val;
-    private node[] neighbors;
+    private Node[] neighbors;
     private int[]xPoints, yPoints;
     private boolean isPlaced;
     private BufferedImage img, outline;
-    public node(String label){
+    public Node(String label){
         super(label);
         //id=0;
         xPoints = new int[6];
         yPoints = new int[6];
-        neighbors=new node[6];
+        neighbors=new Node[6];
         isPlaced=false;
         setOpaque(false);
         setContentAreaFilled(false);
         //setBorderPainted(false);
         hexagon = new Polygon(xPoints, yPoints, 6);
         try{
-            img = ImageIO.read(node.class.getResource("tile1.png"));
+            img = ImageIO.read(Node.class.getResource("tile1.png"));
         }
         catch (Exception e){
             System.out.println("fuck");
@@ -33,11 +32,11 @@ public class node extends JButton {
     }
 
 
-    public node(String label, String s){
+    public Node(String label, String s){
         super(label);
         xPoints = new int[6];
         yPoints = new int[6];
-        neighbors=new node[6];
+        neighbors=new Node[6];
         val=s;
         //System.out.println(Arrays.toString(xPoints));
         //System.out.println(Arrays.toString(yPoints));
@@ -46,14 +45,14 @@ public class node extends JButton {
         setBorderPainted(false);
         hexagon = new Polygon(xPoints, yPoints, 6);
         try{
-            img = ImageIO.read(node.class.getResource("tile.png"));
+            img = ImageIO.read(Node.class.getResource("tile.png"));
         }
         catch (Exception e){
             System.out.println("fuck");
         }
         isPlaced=true;
         for (int i=0;i<6;i++){
-            node n = new node("");
+            Node n = new Node("");
             neighbors[i]=n;
             int num;
             if (i<3){
@@ -68,7 +67,7 @@ public class node extends JButton {
     }
 
 
-    public void setNeighbor(node n, int idx){
+    public void setNeighbor(Node n, int idx){
         if (neighbors[idx]==null){
             //System.out.println("here");
             neighbors[idx]=n;
@@ -99,7 +98,7 @@ public class node extends JButton {
 
 
     public boolean hasEmptyNeighbors(){
-        for (node n:neighbors){
+        for (Node n:neighbors){
             if (n==null){
                 continue;
             }
@@ -124,7 +123,7 @@ public class node extends JButton {
         isPlaced=true;
         //System.out.println(val);
         try{
-            img = ImageIO.read(node.class.getResource("tile.png"));
+            img = ImageIO.read(Node.class.getResource("tile.png"));
         }
         catch (Exception e){
             System.out.println("fuck");
@@ -132,8 +131,8 @@ public class node extends JButton {
         for (int i=0;i<6;i++){
             if (neighbors[i]==null){
                 //System.out.println(toString()+" "+i+" null!");
-                neighbors[i]=new node("");
-                node neighbor = neighbors[i];
+                neighbors[i]=new Node("");
+                Node neighbor = neighbors[i];
                 int num;
                 if (i<3){
                     num=i+3;
@@ -151,7 +150,7 @@ public class node extends JButton {
 
     public int neighborCount(){
         int i=0;
-        for (node n:neighbors){
+        for (Node n:neighbors){
             if (n!=null)
                 i++;
         }
@@ -167,7 +166,7 @@ public class node extends JButton {
         }
     }
 
-    public node[] getNeighbors(){
+    public Node[] getNeighbors(){
         return neighbors;
     }
     public BufferedImage getImg(){
@@ -190,8 +189,8 @@ public class node extends JButton {
 
     public void updateNeighbor(){
         for (int i=0;i<6;i++){
-            node neighbor = neighbors[i];
-            node neighbor1;
+            Node neighbor = neighbors[i];
+            Node neighbor1;
             if (i==5){
                 neighbor1=neighbors[0];
             }
@@ -229,7 +228,7 @@ public class node extends JButton {
     }
 
 
-    public node get(int i){
+    public Node get(int i){
         if (i<6){
             return neighbors[i];
         }
@@ -256,10 +255,10 @@ public class node extends JButton {
         return val+getPlaced();
     }
 
-    public boolean equals(node n){
+    public boolean equals(Node n){
         String v = n.getVal();
         if (v.equals(val)){
-            node[]neighbors1=n.getNeighbors();
+            Node[]neighbors1=n.getNeighbors();
             for (int i=0;i<6;i++){
                 if (!neighbors[i].getVal().equals(neighbors1[i].getVal())){
                     return false;

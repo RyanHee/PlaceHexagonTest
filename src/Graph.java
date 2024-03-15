@@ -1,10 +1,10 @@
 public class Graph {
-    private node root;
+    private Node root;
     public Graph(){
 
     }
 
-    public Graph(node n){
+    public Graph(Node n){
         root=n;
     }
 

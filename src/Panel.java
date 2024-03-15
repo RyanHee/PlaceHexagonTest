@@ -3,8 +3,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
@@ -13,12 +11,12 @@ public class Panel extends JPanel implements ActionListener {
     //private int[]xlst;
     //private int[]ylst;
     private int intt;
-    private HashMap<node, Boolean>map;
-    private ArrayList<node>visted;
+    private HashMap<Node, Boolean>map;
+    private ArrayList<Node>visted;
     private int[]xPoints, yPoints;
     private int angle;
     private static BufferedImage img, img1, outline;
-    private node test, n1;
+    private Node test, n1;
     private JButton rotate;
     private ArrayList<String>names;
     private BufferedImage[] tiles4;
@@ -53,8 +51,8 @@ public class Panel extends JPanel implements ActionListener {
             System.out.println(1231);
         }
         angle=0;
-        test=new node("", "test");
-        n1 = new node("");
+        test=new Node("", "test");
+        n1 = new Node("");
         n1.addActionListener(this);
         //hexButton.setBounds(200*getWidth()/1600, 100*getHeight()/900, 50, 50);
         //hexButton.setVisible(true);
@@ -139,7 +137,7 @@ public class Panel extends JPanel implements ActionListener {
 
     }
 
-    private void putButtons(Graphics g, node n, int x, int y, int w, int h, int id){
+    private void putButtons(Graphics g, Node n, int x, int y, int w, int h, int id){
         if (n==null){
             return;
         }
@@ -233,14 +231,14 @@ public class Panel extends JPanel implements ActionListener {
             }
         }
 
-        node n=(node) e.getSource();
+        Node n=(Node) e.getSource();
         boolean setval=false;
         if (n!=null&&!n.getPlaced()){
             //System.out.println("plz work");
             System.out.println(n);
-            node[]neighbors = n.getNeighbors();
+            Node[]neighbors = n.getNeighbors();
             for (int i=0;i<6;i++){
-                node neighbor = neighbors[i];
+                Node neighbor = neighbors[i];
                 if (neighbor!=null && neighbor.getPlaced()){
                     n.setVal("shh"+intt);
                     intt++;
