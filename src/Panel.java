@@ -7,20 +7,22 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class Panel extends JPanel implements ActionListener {
     //private int[]xlst;
     //private int[]ylst;
     private int intt;
-    private HashMap<Integer, Boolean>map;
+    private HashMap<node, Boolean>map;
     private ArrayList<node>visted;
     private int[]xPoints, yPoints;
     private int angle;
     private static BufferedImage img, img1, outline;
     private node test, n1;
+    private JButton rotate;
+    private ArrayList<String>names;
+    private BufferedImage[] tiles4;
+    private HexButton[]FourButtons;
     //private HexButton hexButton;
     public Panel(){
         intt=0;
@@ -28,6 +30,24 @@ public class Panel extends JPanel implements ActionListener {
             img = ImageIO.read(Panel.class.getResource("tile.png"));
             img1 = ImageIO.read(Panel.class.getResource("tile1.png"));
             outline=ImageIO.read(Panel.class.getResource("tileOutline.png"));
+
+
+            Scanner sc = new Scanner(new File("names.txt"));
+            names=new ArrayList<>();
+            while (sc.hasNext()){
+                names.add(sc.next());
+            }
+            Collections.shuffle(names);
+            tiles4=new BufferedImage[4];
+            FourButtons=new HexButton[4];
+            for (int i=0;i<4;i++){
+                tiles4[i]=ImageIO.read(new File("img/"+names.get(0)+".png"));
+                names.remove(0);
+                FourButtons[i]=new HexButton("");
+                FourButtons[i].addActionListener(this);
+
+            }
+            //System.out.println(Arrays.toString(tiles4));
         }
         catch (Exception e){
             System.out.println(1231);
@@ -40,6 +60,9 @@ public class Panel extends JPanel implements ActionListener {
         //hexButton.setVisible(true);
         map=new HashMap<>();
 
+        //System.out.println(names);
+
+
     }
 
     public void paintComponent(Graphics g){
@@ -48,11 +71,26 @@ public class Panel extends JPanel implements ActionListener {
         int h=58;
         int i=1;
         visted=new ArrayList<>();
+        map=new HashMap<>();
         putButtons(g, test,800, 450, w, h, i );
 
     }
     public void paint(Graphics g){
+
         super.paint(g);
+
+
+        for (int i=0;i<4;i++){
+            add(FourButtons[i]);
+            FourButtons[i].setBounds(95, 100+i*100, 87, 87);
+            //FourButtons[i].paintComponent(g);
+            g.drawImage(tiles4[i], 100, 100+i*100, 75, 87, null);
+            g.drawImage(outline, 100, 100+i*100, 75, 87, null);
+        }
+
+
+
+        /*
         //super.paintComponent(g);
         xPoints=new int[6];
         yPoints=new int[6];
@@ -97,16 +135,15 @@ public class Panel extends JPanel implements ActionListener {
         //System.out.println(test.getX()+" "+test.getY());
         //test.paintComponent(g);
 
+        */
 
     }
 
     private void putButtons(Graphics g, node n, int x, int y, int w, int h, int id){
-        int temp;
-
         if (n==null){
             return;
         }
-        if (visted.contains(n)){
+        if (map.get(n)!=null && map.get(n)){
             return;
         }
         //System.out.println("here? "+n);
@@ -135,7 +172,7 @@ public class Panel extends JPanel implements ActionListener {
                 n.updateNeighbor();
             }
         }
-        System.out.println(s+" "+n.neighborCount());
+        //System.out.println(s+" "+n.neighborCount());
         g.drawImage(n.getImg(), x+3, y, w*50/58, h,null);
         g.drawImage(outline, x+3, y, w*50/58, h, null);
         //g.drawString(s, x+15, y+30);
@@ -144,6 +181,7 @@ public class Panel extends JPanel implements ActionListener {
         add(n);
         n.setBounds(x,y,w,h);
         visted.add(n);
+        map.put(n, true);
         id++;
 
         int[]nx=new int[6];
@@ -185,48 +223,42 @@ public class Panel extends JPanel implements ActionListener {
         //System.out.println(1);
         if (e.getSource().equals(n1)){
             System.out.println("how tf does this work");
+            return;
         }
-        else{
-            node n=(node) e.getSource();
-            boolean setval=false;
-            if (n!=null&&!n.getPlaced()){
-                //System.out.println("plz work");
-                System.out.println(n);
-                node[]neighbors = n.getNeighbors();
-                for (int i=0;i<6;i++){
-                    node neighbor = neighbors[i];
-                    if (neighbor!=null && neighbor.getPlaced()){
-                        n.setVal("shh"+intt);
-                        intt++;
-                        System.out.println(n.getVal());
-                        int num;
-                        if (i<3){
-                            num=i+3;
-                        }
-                        else{
-                            num=i-3;
-                        }
-                        setval=true;
-                        //neighbor.setNeighbor(n, num);
-                    }
-                }
-                /*
-                if(setval){
-                    for (int i=0;i<6;i++){
-                        node neighbor = neighbors[i];
-                        int num;
-                        if (i<3){
-                            num=i+3;
-                        }
-                        else{
-                            num=i-3;
-                        }
-                        neighbor.setNeighbor(n, num);
-                    }
-                }
-                 */
+
+        for (HexButton b:FourButtons){
+            if (e.getSource().equals(b)){
+                System.out.println("FOurbUttons");
+                return;
             }
         }
+
+        node n=(node) e.getSource();
+        boolean setval=false;
+        if (n!=null&&!n.getPlaced()){
+            //System.out.println("plz work");
+            System.out.println(n);
+            node[]neighbors = n.getNeighbors();
+            for (int i=0;i<6;i++){
+                node neighbor = neighbors[i];
+                if (neighbor!=null && neighbor.getPlaced()){
+                    n.setVal("shh"+intt);
+                    intt++;
+                    System.out.println(n.getVal());
+                    int num;
+                    if (i<3){
+                        num=i+3;
+                    }
+                    else{
+                        num=i-3;
+                    }
+                    setval=true;
+                    //neighbor.setNeighbor(n, num);
+                }
+            }
+
+        }
+
         repaint();
     }
 }

@@ -122,7 +122,7 @@ public class node extends JButton {
         }
         val=v;
         isPlaced=true;
-        System.out.println(val);
+        //System.out.println(val);
         try{
             img = ImageIO.read(node.class.getResource("tile.png"));
         }
@@ -131,7 +131,7 @@ public class node extends JButton {
         }
         for (int i=0;i<6;i++){
             if (neighbors[i]==null){
-                System.out.println(toString()+" "+i+" null!");
+                //System.out.println(toString()+" "+i+" null!");
                 neighbors[i]=new node("");
                 node neighbor = neighbors[i];
                 int num;
