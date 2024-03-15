@@ -14,21 +14,24 @@ public class Panel extends JPanel implements ActionListener {
     private HashMap<Node, Boolean>map;
     private ArrayList<Node>visted;
     private int[]xPoints, yPoints;
-    private int angle;
-    private static BufferedImage img, img1, outline;
+    private int angle, drawSelected;
+    private static BufferedImage selectOutline, outline;
     private Node test, n1;
-    private JButton rotate;
+    private HexButton rotate;
     private ArrayList<String>names;
+    private String[]val4;
     private BufferedImage[] tiles4;
     private HexButton[]FourButtons;
+    private boolean valSelected;
+    private String curVal;
     //private HexButton hexButton;
     public Panel(){
         intt=0;
         try{
-            img = ImageIO.read(Panel.class.getResource("tile.png"));
-            img1 = ImageIO.read(Panel.class.getResource("tile1.png"));
+            //img = ImageIO.read(Panel.class.getResource("tile.png"));
+            //img1 = ImageIO.read(Panel.class.getResource("tile1.png"));
             outline=ImageIO.read(Panel.class.getResource("tileOutline.png"));
-
+            selectOutline=ImageIO.read(new File("img/selectedTile.png"));
 
             Scanner sc = new Scanner(new File("names.txt"));
             names=new ArrayList<>();
@@ -38,8 +41,10 @@ public class Panel extends JPanel implements ActionListener {
             Collections.shuffle(names);
             tiles4=new BufferedImage[4];
             FourButtons=new HexButton[4];
+            val4=new String[4];
             for (int i=0;i<4;i++){
-                tiles4[i]=ImageIO.read(new File("img/"+names.get(0)+".png"));
+                tiles4[i]=ImageIO.read(new File("img/Tile"+names.get(0)+".png"));
+                val4[i]=names.get(0);
                 names.remove(0);
                 FourButtons[i]=new HexButton("");
                 FourButtons[i].addActionListener(this);
@@ -51,13 +56,15 @@ public class Panel extends JPanel implements ActionListener {
             System.out.println(1231);
         }
         angle=0;
+        drawSelected=-1;
         test=new Node("", "test");
         n1 = new Node("");
         n1.addActionListener(this);
         //hexButton.setBounds(200*getWidth()/1600, 100*getHeight()/900, 50, 50);
         //hexButton.setVisible(true);
         map=new HashMap<>();
-
+        curVal="";
+        valSelected=false;
         //System.out.println(names);
 
 
@@ -82,6 +89,9 @@ public class Panel extends JPanel implements ActionListener {
             add(FourButtons[i]);
             FourButtons[i].setBounds(95, 100+i*100, 87, 87);
             //FourButtons[i].paintComponent(g);
+            if (i==drawSelected){
+                g.drawImage(selectOutline, 100, 100+i*100, 75, 87, null);
+            }
             g.drawImage(tiles4[i], 100, 100+i*100, 75, 87, null);
             g.drawImage(outline, 100, 100+i*100, 75, 87, null);
         }
@@ -157,12 +167,10 @@ public class Panel extends JPanel implements ActionListener {
             //xPoints[i] = x + (int)Math.round(-width*Math.sin(v + Math.PI/2));
             //yPoints[i] = y + (int)Math.round(-height*Math.cos(v + Math.PI/2));
         }
-        //g.fillPolygon(xlst,ylst,6);
-        //id=temp;
         double er=w*50*4/58/58;
-        String s="hh"+id;
+        //String s="hh"+id;
         if (n.getVal()!=null){
-            s=n.getVal();
+            //s=n.getVal();
             n.updateNeighbor();
         }
         else{
@@ -224,37 +232,26 @@ public class Panel extends JPanel implements ActionListener {
             return;
         }
 
-        for (HexButton b:FourButtons){
-            if (e.getSource().equals(b)){
+        for (int i=0;i<4;i++){
+            HexButton b =FourButtons[i];
+            if (e.getSource().equals(b)&&!valSelected){
                 System.out.println("FOurbUttons");
+                valSelected=true;
+                curVal=val4[i];
+                System.out.println(curVal);
+                drawSelected=i;
+                repaint();
                 return;
             }
         }
 
         Node n=(Node) e.getSource();
-        boolean setval=false;
-        if (n!=null&&!n.getPlaced()){
+        if (n!=null&&!n.getPlaced()&&valSelected){
             //System.out.println("plz work");
             System.out.println(n);
-            Node[]neighbors = n.getNeighbors();
-            for (int i=0;i<6;i++){
-                Node neighbor = neighbors[i];
-                if (neighbor!=null && neighbor.getPlaced()){
-                    n.setVal("shh"+intt);
-                    intt++;
-                    System.out.println(n.getVal());
-                    int num;
-                    if (i<3){
-                        num=i+3;
-                    }
-                    else{
-                        num=i-3;
-                    }
-                    setval=true;
-                    //neighbor.setNeighbor(n, num);
-                }
-            }
-
+            n.setVal(curVal);
+            valSelected=false;
+            drawSelected=-1;
         }
 
         repaint();

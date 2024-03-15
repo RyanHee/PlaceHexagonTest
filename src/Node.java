@@ -2,26 +2,34 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.HashSet;
 
 public class Node extends JButton {
 
-    //private int id;
+    private HashSet<String>animals;
     private Polygon hexagon;
-    private String val;
+    private String val, left, right;
+    private int rotateAngle;
     private Node[] neighbors;
     private int[]xPoints, yPoints;
     private boolean isPlaced;
     private BufferedImage img, outline;
+    private String[] Sides;
     public Node(String label){
         super(label);
         //id=0;
         xPoints = new int[6];
         yPoints = new int[6];
         neighbors=new Node[6];
+        Sides=new String[6];
         isPlaced=false;
         setOpaque(false);
         setContentAreaFilled(false);
-        //setBorderPainted(false);
+        left="";
+        right="";
+        rotateAngle=0;
+        animals=new HashSet<>();
         hexagon = new Polygon(xPoints, yPoints, 6);
         try{
             img = ImageIO.read(Node.class.getResource("tile1.png"));
@@ -45,7 +53,7 @@ public class Node extends JButton {
         setBorderPainted(false);
         hexagon = new Polygon(xPoints, yPoints, 6);
         try{
-            img = ImageIO.read(Node.class.getResource("tile.png"));
+            img = ImageIO.read(new File("img/Tile/"+val+".png"));
         }
         catch (Exception e){
             System.out.println("fuck");
@@ -123,7 +131,14 @@ public class Node extends JButton {
         isPlaced=true;
         //System.out.println(val);
         try{
-            img = ImageIO.read(Node.class.getResource("tile.png"));
+            img = ImageIO.read(new File("img/Tile/"+val+".png"));
+            String[]lst=val.split("-");
+            left=lst[0].substring(0,1);
+            right=lst[0].substring(1,2);
+            char[]animallst=lst[1].toCharArray();
+            for (char c:animallst){
+                animals.add(Character.toString(c));
+            }
         }
         catch (Exception e){
             System.out.println("fuck");
