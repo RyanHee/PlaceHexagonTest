@@ -74,6 +74,23 @@ public class Node extends JButton {
         updateNeighbor();
     }
 
+    public int addRotateAngle(){
+        rotateAngle+=60;
+        String[]lst = new String[6];
+        for (int i=0;i<6;i++){
+            if (i>0){
+                lst[i]=Sides[i-1];
+            }
+            else{
+                lst[i]=Sides[5];
+            }
+        }
+        return rotateAngle;
+    }
+
+    public int getRotateAngle(){
+        return rotateAngle;
+    }
 
     public void setNeighbor(Node n, int idx){
         if (neighbors[idx]==null){
@@ -135,6 +152,12 @@ public class Node extends JButton {
             String[]lst=val.split("-");
             left=lst[0].substring(0,1);
             right=lst[0].substring(1,2);
+            for (int i=0;i<3;i++){
+                Sides[i]=left;
+            }
+            for (int i=3;i<6;i++) {
+                Sides[i]=right;
+            }
             char[]animallst=lst[1].toCharArray();
             for (char c:animallst){
                 animals.add(Character.toString(c));

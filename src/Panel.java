@@ -15,8 +15,8 @@ public class Panel extends JPanel implements ActionListener {
     private ArrayList<Node>visted;
     private int[]xPoints, yPoints;
     private int angle, drawSelected;
-    private static BufferedImage selectOutline, outline;
-    private Node test, n1;
+    private static BufferedImage selectOutline, outline, rotateImage;
+    private Node test, n1, nodeSelected;
     private HexButton rotate;
     private ArrayList<String>names;
     private String[]val4;
@@ -26,7 +26,7 @@ public class Panel extends JPanel implements ActionListener {
     private String curVal;
     //private HexButton hexButton;
     public Panel(){
-        intt=0;
+        nodeSelected=null;
         try{
             //img = ImageIO.read(Panel.class.getResource("tile.png"));
             //img1 = ImageIO.read(Panel.class.getResource("tile1.png"));
@@ -50,6 +50,7 @@ public class Panel extends JPanel implements ActionListener {
                 FourButtons[i].addActionListener(this);
 
             }
+            rotateImage=ImageIO.read(new File("img/tilePlacementRotateClockwise.png"));
             //System.out.println(Arrays.toString(tiles4));
         }
         catch (Exception e){
@@ -65,8 +66,8 @@ public class Panel extends JPanel implements ActionListener {
         map=new HashMap<>();
         curVal="";
         valSelected=false;
-        //System.out.println(names);
-
+        rotate = new HexButton("");
+        rotate.addActionListener(this);
 
     }
 
@@ -97,8 +98,10 @@ public class Panel extends JPanel implements ActionListener {
             }
         }
 
-
-
+        g.drawImage(rotateImage, 1203, 500, 75, 87, null);
+        add(rotate);
+        rotate.setBounds(1200, 500, 87, 87);
+        //rotate.paintComponent(g);
         /*
         //super.paintComponent(g);
         xPoints=new int[6];
@@ -180,8 +183,13 @@ public class Panel extends JPanel implements ActionListener {
             }
         }
         //System.out.println(s+" "+n.neighborCount());
-        g.drawImage(n.getImg(), x+3, y, w*50/58, h,null);
-        g.drawImage(outline, x+3, y, w*50/58, h, null);
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.rotate(Math.toRadians(n.getRotateAngle()), x + 28, y + 29);
+
+        g2.drawImage(n.getImg(), x+3, y, w*50/58, h, null);
+        g2.dispose();
+        //g.drawImage(n.getImg(), x+3, y, w*50/58, h,null);
+        //g.drawImage(outline, x-2, y, w*50/58, h, null);
         //g.drawString(s, x+15, y+30);
 
         n.addActionListener(this);
@@ -241,11 +249,17 @@ public class Panel extends JPanel implements ActionListener {
                 curVal=val4[i];
                 System.out.println(curVal);
                 drawSelected=i;
+                nodeSelected=null;
                 repaint();
                 return;
             }
         }
-
+        if (nodeSelected!=null && e.getSource().equals(rotate)){
+            nodeSelected.addRotateAngle();
+            System.out.println("rotateeeee");
+            repaint();
+            return;
+        }
         Node n=(Node) e.getSource();
         if (n!=null&&!n.getPlaced()&&valSelected){
             //System.out.println("plz work");
@@ -261,7 +275,11 @@ public class Panel extends JPanel implements ActionListener {
                 System.out.println("blah");
             }
             drawSelected=-1;
+            nodeSelected=n;
         }
+
+
+
 
         repaint();
     }
