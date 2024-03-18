@@ -43,7 +43,7 @@ public class Panel extends JPanel implements ActionListener {
             FourButtons=new HexButton[4];
             val4=new String[4];
             for (int i=0;i<4;i++){
-                tiles4[i]=ImageIO.read(new File("img/Tile"+names.get(0)+".png"));
+                tiles4[i]=ImageIO.read(new File("img/Tile/"+names.get(0)+".png"));
                 val4[i]=names.get(0);
                 names.remove(0);
                 FourButtons[i]=new HexButton("");
