@@ -57,7 +57,7 @@ public class Panel extends JPanel implements ActionListener {
         }
         angle=0;
         drawSelected=-1;
-        test=new Node("", "test");
+        test=new Node("", "MS-FHB");
         n1 = new Node("");
         n1.addActionListener(this);
         //hexButton.setBounds(200*getWidth()/1600, 100*getHeight()/900, 50, 50);
@@ -89,11 +89,12 @@ public class Panel extends JPanel implements ActionListener {
             add(FourButtons[i]);
             FourButtons[i].setBounds(95, 100+i*100, 87, 87);
             //FourButtons[i].paintComponent(g);
+
+            g.drawImage(tiles4[i], 100, 100+i*100, 75, 87, null);
+            g.drawImage(outline, 100, 100+i*100, 75, 87, null);
             if (i==drawSelected){
                 g.drawImage(selectOutline, 100, 100+i*100, 75, 87, null);
             }
-            g.drawImage(tiles4[i], 100, 100+i*100, 75, 87, null);
-            g.drawImage(outline, 100, 100+i*100, 75, 87, null);
         }
 
 
@@ -251,6 +252,14 @@ public class Panel extends JPanel implements ActionListener {
             System.out.println(n);
             n.setVal(curVal);
             valSelected=false;
+            val4[drawSelected]=names.get(0);
+            names.remove(0);
+            try{
+                tiles4[drawSelected]=ImageIO.read(new File("img/Tile/"+val4[drawSelected]+".png"));
+            }
+            catch (Exception E){
+                System.out.println("blah");
+            }
             drawSelected=-1;
         }
 
