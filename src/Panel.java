@@ -22,7 +22,8 @@ public class Panel extends JPanel implements ActionListener {
     private ArrayList<String> tileNames, animalList;
     private String[] tileName4, animalToken4;
     private BufferedImage[] tiles4;
-    private HexButton[]FourButtons;
+    private HexButton[] fourButtonTiles;
+    private JButton[]fourButtonAnimal;
     private boolean valSelected;
     private String curVal;
     //private HexButton hexButton;
@@ -50,15 +51,18 @@ public class Panel extends JPanel implements ActionListener {
             Collections.shuffle(animalList);
             Collections.shuffle(tileNames);
             tiles4=new BufferedImage[4];
-            FourButtons=new HexButton[4];
+            fourButtonTiles =new HexButton[4];
+            fourButtonAnimal= new JButton[4];
             tileName4 =new String[4];
             animalToken4=new String[4];
             for (int i=0;i<4;i++){
                 tiles4[i]=ImageIO.read(new File("img/Tile/"+ tileNames.get(0)+".png"));
                 tileName4[i]= tileNames.get(0);
                 tileNames.remove(0);
-                FourButtons[i]=new HexButton("");
-                FourButtons[i].addActionListener(this);
+                fourButtonTiles[i]=new HexButton("");
+                fourButtonTiles[i].addActionListener(this);
+                fourButtonAnimal[i]=new JButton("");
+                fourButtonAnimal[i].addActionListener(this);
                 animalToken4[i]=animalList.remove(0);
             }
 
@@ -106,8 +110,8 @@ public class Panel extends JPanel implements ActionListener {
 
 
         for (int i=0;i<4;i++){
-            add(FourButtons[i]);
-            FourButtons[i].setBounds(95, 100+i*100, 87, 87);
+            add(fourButtonTiles[i]);
+            fourButtonTiles[i].setBounds(95, 100+i*100, 87, 87);
             //FourButtons[i].paintComponent(g);
 
             g.drawImage(tiles4[i], 100, 100+i*100, 75, 87, null);
@@ -261,7 +265,7 @@ public class Panel extends JPanel implements ActionListener {
         }
 
         for (int i=0;i<4;i++){
-            HexButton b =FourButtons[i];
+            HexButton b = fourButtonTiles[i];
             if (e.getSource().equals(b)&&!valSelected){
                 System.out.println("FOurbUttons");
                 valSelected=true;
