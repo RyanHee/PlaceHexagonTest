@@ -3,13 +3,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
 
 public class Node extends JButton {
 
     private HashSet<String>animals;
     private Polygon hexagon;
-    private String val, left, right;
+    private String val, left, right, animal;
     private int rotateAngle;
     private Node[] neighbors;
     private int[]xPoints, yPoints;
@@ -19,6 +20,7 @@ public class Node extends JButton {
     public Node(String label){
         super(label);
         //id=0;
+        animal="";
         xPoints = new int[6];
         yPoints = new int[6];
         neighbors=new Node[6];
@@ -42,6 +44,7 @@ public class Node extends JButton {
 
     public Node(String label, String s){
         super(label);
+        animal="";
         xPoints = new int[6];
         yPoints = new int[6];
         neighbors=new Node[6];
@@ -74,6 +77,16 @@ public class Node extends JButton {
         updateNeighbor();
     }
 
+    public boolean setAnimal(String s){
+        if (animal.equals("")){
+            if (animals.contains(s)){
+                animal=s;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int addRotateAngle(){
         rotateAngle+=60;
         String[]lst = new String[6];
@@ -85,6 +98,8 @@ public class Node extends JButton {
                 lst[i]=Sides[5];
             }
         }
+        System.out.println(Arrays.toString(lst));
+        Sides=lst;
         return rotateAngle;
     }
 
@@ -153,11 +168,12 @@ public class Node extends JButton {
             left=lst[0].substring(0,1);
             right=lst[0].substring(1,2);
             for (int i=0;i<3;i++){
-                Sides[i]=left;
-            }
-            for (int i=3;i<6;i++) {
                 Sides[i]=right;
             }
+            for (int i=3;i<6;i++) {
+                Sides[i]=left;
+            }
+            System.out.println(Arrays.toString(Sides));
             char[]animallst=lst[1].toCharArray();
             for (char c:animallst){
                 animals.add(Character.toString(c));

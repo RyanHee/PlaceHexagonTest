@@ -12,14 +12,15 @@ public class Panel extends JPanel implements ActionListener {
     //private int[]ylst;
     private int intt;
     private HashMap<Node, Boolean>map;
+    private HashMap<String, BufferedImage[]>animalTokenMap;
     private ArrayList<Node>visted;
     private int[]xPoints, yPoints;
     private int angle, drawSelected;
     private static BufferedImage selectOutline, outline, rotateImage;
     private Node test, n1, nodeSelected;
     private HexButton rotate;
-    private ArrayList<String>names;
-    private String[]val4;
+    private ArrayList<String> tileNames, animalList;
+    private String[] tileName4, animalToken4;
     private BufferedImage[] tiles4;
     private HexButton[]FourButtons;
     private boolean valSelected;
@@ -30,26 +31,46 @@ public class Panel extends JPanel implements ActionListener {
         try{
             //img = ImageIO.read(Panel.class.getResource("tile.png"));
             //img1 = ImageIO.read(Panel.class.getResource("tile1.png"));
-            outline=ImageIO.read(Panel.class.getResource("tileOutline.png"));
+            outline=ImageIO.read(new File("img/tileOutline.png"));
             selectOutline=ImageIO.read(new File("img/selectedTile.png"));
 
             Scanner sc = new Scanner(new File("names.txt"));
-            names=new ArrayList<>();
+            tileNames = new ArrayList<>();
+            animalList = new ArrayList<>();
             while (sc.hasNext()){
-                names.add(sc.next());
+                tileNames.add(sc.next());
             }
-            Collections.shuffle(names);
+            for (int i=0;i<20;i++){
+                animalList.add("B");
+                animalList.add("E");
+                animalList.add("H");
+                animalList.add("S");
+                animalList.add("F");
+            }
+            Collections.shuffle(animalList);
+            Collections.shuffle(tileNames);
             tiles4=new BufferedImage[4];
             FourButtons=new HexButton[4];
-            val4=new String[4];
+            tileName4 =new String[4];
+            animalToken4=new String[4];
             for (int i=0;i<4;i++){
-                tiles4[i]=ImageIO.read(new File("img/Tile/"+names.get(0)+".png"));
-                val4[i]=names.get(0);
-                names.remove(0);
+                tiles4[i]=ImageIO.read(new File("img/Tile/"+ tileNames.get(0)+".png"));
+                tileName4[i]= tileNames.get(0);
+                tileNames.remove(0);
                 FourButtons[i]=new HexButton("");
                 FourButtons[i].addActionListener(this);
-
+                animalToken4[i]=animalList.remove(0);
             }
+
+
+            String[]A=new String[]{"B", "E", "F", "H", "S"};
+            String[] ALong=new String[]{"bear", "elk", "fox", "hawk", "salmon"};
+            for (int i=0;i<5;i++){
+                animalTokenMap.put(A[i], new BufferedImage[]{ImageIO.read(new File("img/tokens/"+ALong[i]+".png")),
+                        ImageIO.read(new File("img/tokens/"+ALong[i]+"Active.png")),
+                        ImageIO.read(new File("img/tokens/"+ALong[i]+"Inactive.png"))});
+            }
+
             rotateImage=ImageIO.read(new File("img/tilePlacementRotateClockwise.png"));
             //System.out.println(Arrays.toString(tiles4));
         }
@@ -61,8 +82,6 @@ public class Panel extends JPanel implements ActionListener {
         test=new Node("", "MS-FHB");
         n1 = new Node("");
         n1.addActionListener(this);
-        //hexButton.setBounds(200*getWidth()/1600, 100*getHeight()/900, 50, 50);
-        //hexButton.setVisible(true);
         map=new HashMap<>();
         curVal="";
         valSelected=false;
@@ -246,7 +265,7 @@ public class Panel extends JPanel implements ActionListener {
             if (e.getSource().equals(b)&&!valSelected){
                 System.out.println("FOurbUttons");
                 valSelected=true;
-                curVal=val4[i];
+                curVal= tileName4[i];
                 System.out.println(curVal);
                 drawSelected=i;
                 nodeSelected=null;
@@ -266,10 +285,10 @@ public class Panel extends JPanel implements ActionListener {
             System.out.println(n);
             n.setVal(curVal);
             valSelected=false;
-            val4[drawSelected]=names.get(0);
-            names.remove(0);
+            tileName4[drawSelected]= tileNames.get(0);
+            tileNames.remove(0);
             try{
-                tiles4[drawSelected]=ImageIO.read(new File("img/Tile/"+val4[drawSelected]+".png"));
+                tiles4[drawSelected]=ImageIO.read(new File("img/Tile/"+ tileName4[drawSelected]+".png"));
             }
             catch (Exception E){
                 System.out.println("blah");
