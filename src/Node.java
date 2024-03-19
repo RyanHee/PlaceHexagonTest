@@ -10,12 +10,12 @@ public class Node extends JButton {
 
     private HashSet<String>animals;
     private Polygon hexagon;
-    private String val, left, right, animal;
+    private String val, animal;
     private int rotateAngle;
     private Node[] neighbors;
     private int[]xPoints, yPoints;
     private boolean isPlaced;
-    private BufferedImage img, outline;
+    private BufferedImage img;
     private String[] Sides;
     public Node(String label){
         super(label);
@@ -28,8 +28,6 @@ public class Node extends JButton {
         isPlaced=false;
         setOpaque(false);
         setContentAreaFilled(false);
-        left="";
-        right="";
         rotateAngle=0;
         animals=new HashSet<>();
         hexagon = new Polygon(xPoints, yPoints, 6);
@@ -165,8 +163,8 @@ public class Node extends JButton {
         try{
             img = ImageIO.read(new File("img/Tile/"+val+".png"));
             String[]lst=val.split("-");
-            left=lst[0].substring(0,1);
-            right=lst[0].substring(1,2);
+            String left=lst[0].substring(0,1);
+            String right=lst[0].substring(1,2);
             for (int i=0;i<3;i++){
                 Sides[i]=right;
             }
