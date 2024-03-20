@@ -11,15 +11,15 @@ public class Panel extends JPanel implements ActionListener {
     //private int[]xlst;
     //private int[]ylst;
     private int intt;
-    private HashMap<Node, Boolean>map;
+    private HashSet<Node> visited;
     private HashMap<String, BufferedImage[]>animalTokenMap;
-    private ArrayList<Node>visted;
+    //private ArrayList<Node>visted;
     private int[]xPoints, yPoints;
     private int angle, drawSelected;
     private static BufferedImage selectOutline, outline, rotateImage;
     private Node test, n1, nodeSelected;
     private HexButton rotate;
-    private ArrayList<String> tileNames, animalList;
+    private ArrayList<String> tileNames, animalDeck;
     private String[] tileName4, animalToken4;
     private BufferedImage[] tiles4;
     private HexButton[] fourButtonTiles;
@@ -37,18 +37,18 @@ public class Panel extends JPanel implements ActionListener {
 
             Scanner sc = new Scanner(new File("names.txt"));
             tileNames = new ArrayList<>();
-            animalList = new ArrayList<>();
+            animalDeck = new ArrayList<>();
             while (sc.hasNext()){
                 tileNames.add(sc.next());
             }
             for (int i=0;i<20;i++){
-                animalList.add("B");
-                animalList.add("E");
-                animalList.add("H");
-                animalList.add("S");
-                animalList.add("F");
+                animalDeck.add("B");
+                animalDeck.add("E");
+                animalDeck.add("H");
+                animalDeck.add("S");
+                animalDeck.add("F");
             }
-            Collections.shuffle(animalList);
+            Collections.shuffle(animalDeck);
             Collections.shuffle(tileNames);
             tiles4=new BufferedImage[4];
             fourButtonTiles =new HexButton[4];
@@ -63,7 +63,7 @@ public class Panel extends JPanel implements ActionListener {
                 fourButtonTiles[i].addActionListener(this);
                 fourButtonAnimal[i]=new JButton("");
                 fourButtonAnimal[i].addActionListener(this);
-                animalToken4[i]=animalList.remove(0);
+                animalToken4[i]= animalDeck.remove(0);
             }
 
 
@@ -86,7 +86,7 @@ public class Panel extends JPanel implements ActionListener {
         test=new Node("", "MS-FHB");
         n1 = new Node("");
         n1.addActionListener(this);
-        map=new HashMap<>();
+        visited =new HashSet<>();
         curVal="";
         valSelected=false;
         rotate = new HexButton("");
@@ -99,8 +99,8 @@ public class Panel extends JPanel implements ActionListener {
         int w=58;
         int h=58;
         int i=1;
-        visted=new ArrayList<>();
-        map=new HashMap<>();
+        //visted=new ArrayList<>();
+        visited =new HashSet<>();
         putButtons(g, test,800, 450, w, h, i );
 
     }
@@ -178,7 +178,7 @@ public class Panel extends JPanel implements ActionListener {
         if (n==null){
             return;
         }
-        if (map.get(n)!=null && map.get(n)){
+        if (visited.contains(n)){
             return;
         }
         //System.out.println("here? "+n);
@@ -218,8 +218,7 @@ public class Panel extends JPanel implements ActionListener {
         n.addActionListener(this);
         add(n);
         n.setBounds(x,y,w,h);
-        visted.add(n);
-        map.put(n, true);
+        visited.add(n);
         id++;
 
         int[]nx=new int[6];

@@ -208,15 +208,6 @@ public class Node extends JButton {
         }
         return i;
     }
-    public void placed(){
-        isPlaced=true;
-        try{
-            img = ImageIO.read(Panel.class.getResource("tile.png"));
-        }
-        catch (Exception e){
-            System.out.println("fuck");
-        }
-    }
 
     public Node[] getNeighbors(){
         return neighbors;
