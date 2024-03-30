@@ -4,6 +4,7 @@ import javax.swing.*;
 public class InvisButton extends JButton {
 
     public InvisButton (String s){
+        super(s);
         setOpaque(false);
         setContentAreaFilled(false);
         setBorderPainted(false);

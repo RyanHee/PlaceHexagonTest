@@ -15,7 +15,7 @@ public class Panel extends JPanel implements ActionListener {
     private HashMap<String, BufferedImage[]>animalTokenMap;
     //private ArrayList<Node>visted;
     private int[]xPoints, yPoints;
-    private int angle, drawSelected;
+    private int angle, drawSelectedTile, drawSelectedAnimal;
     private static BufferedImage selectOutline, outline, rotateImage;
     private Node test, n1, nodeSelected;
     private HexButton rotate;
@@ -24,7 +24,8 @@ public class Panel extends JPanel implements ActionListener {
     private BufferedImage[] tiles4;
     private HexButton[] fourButtonTiles;
     private JButton[]fourButtonAnimal;
-    private boolean valSelected;
+    private boolean valSelected, pickTurn, putTurn, rotateTurn, confirmTurn, animalTurn;
+    private JButton confirmB;
     private String curVal;
     //private HexButton hexButton;
     public Panel(){
@@ -82,7 +83,9 @@ public class Panel extends JPanel implements ActionListener {
             System.out.println(1231);
         }
         angle=0;
-        drawSelected=-1;
+        drawSelectedTile =-1;
+        confirmB=new JButton("confirm");
+        confirmB.addActionListener(this);
         test=new Node("", "MS-FHB");
         n1 = new Node("");
         n1.addActionListener(this);
@@ -101,13 +104,14 @@ public class Panel extends JPanel implements ActionListener {
         int i=1;
         //visted=new ArrayList<>();
         visited =new HashSet<>();
-        putButtons(g, test,800, 450, w, h, i );
+        putButtons(g, test,800, 450, w, h);
 
     }
     public void paint(Graphics g){
 
         super.paint(g);
-
+        add(confirmB);
+        confirmB.setBounds(1200, 800, 200, 50);
 
         for (int i=0;i<4;i++){
             add(fourButtonTiles[i]);
@@ -116,7 +120,7 @@ public class Panel extends JPanel implements ActionListener {
 
             g.drawImage(tiles4[i], 100, 100+i*100, 75, 87, null);
             g.drawImage(outline, 100, 100+i*100, 75, 87, null);
-            if (i==drawSelected){
+            if (i== drawSelectedTile){
                 g.drawImage(selectOutline, 100, 100+i*100, 75, 87, null);
             }
         }
@@ -174,7 +178,7 @@ public class Panel extends JPanel implements ActionListener {
 
     }
 
-    private void putButtons(Graphics g, Node n, int x, int y, int w, int h, int id){
+    private void putButtons(Graphics g, Node n, int x, int y, int w, int h){
         if (n==null){
             return;
         }
@@ -219,7 +223,7 @@ public class Panel extends JPanel implements ActionListener {
         add(n);
         n.setBounds(x,y,w,h);
         visited.add(n);
-        id++;
+        //id++;
 
         int[]nx=new int[6];
         int[]ny=new int[6];
@@ -252,12 +256,18 @@ public class Panel extends JPanel implements ActionListener {
         //System.out.println(Arrays.toString(nx));
         //System.out.println(Arrays.toString(ny));
         for (int i=0;i<6;i++){
-            putButtons(g, n.getNeighbors()[i], nx[i], ny[i], w, h, id);
+            putButtons(g, n.getNeighbors()[i], nx[i], ny[i], w, h);
         }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
         //System.out.println(1);
+        if ((putTurn||rotateTurn||confirmTurn||animalTurn)==false){
+            pickTurn=true;
+        }
+        else{
+            pickTurn=false;
+        }
         if (e.getSource().equals(n1)){
             System.out.println("how tf does this work");
             return;
@@ -265,12 +275,13 @@ public class Panel extends JPanel implements ActionListener {
 
         for (int i=0;i<4;i++){
             HexButton b = fourButtonTiles[i];
-            if (e.getSource().equals(b)&&!valSelected){
+            if (e.getSource().equals(b)&&pickTurn){
                 System.out.println("FOurbUttons");
-                valSelected=true;
+                putTurn=true;
+                pickTurn=false;
                 curVal= tileName4[i];
                 System.out.println(curVal);
-                drawSelected=i;
+                drawSelectedTile =i;
                 nodeSelected=null;
                 repaint();
                 return;
@@ -279,24 +290,33 @@ public class Panel extends JPanel implements ActionListener {
         if (nodeSelected!=null && e.getSource().equals(rotate)){
             nodeSelected.addRotateAngle();
             System.out.println("rotateeeee");
+            rotateTurn=false;
+            confirmTurn=true;
             repaint();
             return;
         }
+
+        if (e.getSource().equals(confirmB)&&confirmTurn==true){
+            animalTurn=true;
+            confirmTurn=false;
+        }
+
         Node n=(Node) e.getSource();
-        if (n!=null&&!n.getPlaced()&&valSelected){
+        if (n!=null&&!n.getPlaced()&&putTurn){
             //System.out.println("plz work");
             System.out.println(n);
             n.setVal(curVal);
-            valSelected=false;
-            tileName4[drawSelected]= tileNames.get(0);
+            putTurn=false;
+            tileName4[drawSelectedTile]= tileNames.get(0);
             tileNames.remove(0);
             try{
-                tiles4[drawSelected]=ImageIO.read(new File("img/Tile/"+ tileName4[drawSelected]+".png"));
+                tiles4[drawSelectedTile]=ImageIO.read(new File("img/Tile/"+ tileName4[drawSelectedTile]+".png"));
             }
             catch (Exception E){
                 System.out.println("blah");
             }
-            drawSelected=-1;
+            rotateTurn=true;
+            drawSelectedTile =-1;
             nodeSelected=n;
         }
 

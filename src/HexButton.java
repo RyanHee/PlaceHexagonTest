@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 public class HexButton extends JButton {
     private Polygon hexagon;
-    private int x, y, width, height;
     private int[]xPoints, yPoints;
     private BufferedImage img;
     public HexButton(String label){
