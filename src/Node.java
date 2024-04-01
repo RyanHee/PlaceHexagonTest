@@ -46,12 +46,15 @@ public class Node extends JButton {
         xPoints = new int[6];
         yPoints = new int[6];
         neighbors=new Node[6];
+        Sides=new String[6];
+        isPlaced=true;
         val=s;
         //System.out.println(Arrays.toString(xPoints));
         //System.out.println(Arrays.toString(yPoints));
         setOpaque(false);
         setContentAreaFilled(false);
         setBorderPainted(false);
+        animals=new HashSet<>();
         hexagon = new Polygon(xPoints, yPoints, 6);
         try{
             img = ImageIO.read(new File("img/Tile/"+val+".png"));
@@ -59,7 +62,23 @@ public class Node extends JButton {
         catch (Exception e){
             System.out.println("fuck");
         }
-        isPlaced=true;
+
+        String[]lst=val.split("-");
+        String left=lst[0].substring(0,1);
+        String right=lst[0].substring(1,2);
+        for (int i=0;i<3;i++){
+            Sides[i]=right;
+        }
+        for (int i=3;i<6;i++) {
+            Sides[i]=left;
+        }
+        System.out.println(Arrays.toString(Sides));
+        char[]animallst=lst[1].toCharArray();
+        for (char c:animallst){
+            animals.add(Character.toString(c));
+        }
+
+
         for (int i=0;i<6;i++){
             Node n = new Node("");
             neighbors[i]=n;
@@ -73,6 +92,10 @@ public class Node extends JButton {
             n.setNeighbor(this, num);
         }
         updateNeighbor();
+    }
+
+    public String getAnimal(){
+        return animal;
     }
 
     public boolean setAnimal(String s){
@@ -311,4 +334,6 @@ public class Node extends JButton {
         }
         return false;
     }
+
+
 }
