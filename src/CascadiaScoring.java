@@ -1,8 +1,12 @@
 import java.util.HashMap;
 
-public interface CascadiaScoring {
+public class CascadiaScoring {
 
-    default HashMap<String, Integer> score(Node n){
+    public CascadiaScoring(){
+
+    }
+
+    public HashMap<String, Integer> score(Node n){
         HashMap<String, Integer>map = new HashMap<>();
         return map;
     }

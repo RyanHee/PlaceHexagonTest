@@ -10,7 +10,7 @@ import java.util.*;
 public class Panel extends JPanel implements ActionListener {
     //private int[]xlst;
     //private int[]ylst;
-    private HashSet<Node> visited;
+
     private HashMap<String, BufferedImage[]>animalTokenMap;
     //private ArrayList<Node>visted;
     private int[]xPoints, yPoints;
@@ -23,9 +23,14 @@ public class Panel extends JPanel implements ActionListener {
     private BufferedImage[] tiles4;
     private HexButton[] fourButtonTiles;
     private InvisButton[]fourButtonAnimal;
-    private boolean drawHighlightAnimal, valSelected, pickTurn, putTurn, rotateTurn, confirmTurn, animalTurn, putAnimalTurn;
+    private int state;
+    private boolean drawHighlightAnimal, pickTurn, putTurn, rotateTurn, confirmTurn, animalTurn, putAnimalTurn;
     private JButton confirmB, cancelB;
     private String curVal, curAnimal;
+    private BoardPanel bp;
+    private BufferedImage dpad;
+    private InvisButton up, down, right, left;
+
     //private HexButton hexButton;
     public Panel(){
         nodeSelected=null;
@@ -33,6 +38,7 @@ public class Panel extends JPanel implements ActionListener {
         try{
             //img = ImageIO.read(Panel.class.getResource("tile.png"));
             //img1 = ImageIO.read(Panel.class.getResource("tile1.png"));
+            dpad=ImageIO.read(new File("img/DPAD.jpg"));
             outline=ImageIO.read(new File("img/tileOutline.png"));
             selectOutline=ImageIO.read(new File("img/selectedTile.png"));
 
@@ -65,7 +71,7 @@ public class Panel extends JPanel implements ActionListener {
                 fourButtonTiles[i].addActionListener(this);
                 fourButtonAnimal[i]=new InvisButton("");
                 fourButtonAnimal[i].addActionListener(this);
-                fourButtonAnimal[i].showButton();
+                //fourButtonAnimal[i].showButton();
                 animalToken4[i]= animalDeck.remove(0);
             }
 
@@ -91,28 +97,34 @@ public class Panel extends JPanel implements ActionListener {
         cancelB=new JButton("cancel");
         cancelB.addActionListener(this);
 
+        up=new InvisButton("");
+        down=new InvisButton("");
+        right=new InvisButton("");
+        left=new InvisButton("");
+        up.addActionListener(this);
+        down.addActionListener(this);
+        right.addActionListener(this);
+        left.addActionListener(this);
+
         test=new Node("", "MS-FHB");
         n1 = new Node("");
         n1.addActionListener(this);
-        visited =new HashSet<>();
         curVal="";
-        valSelected=false;
+        state=0;
         rotate = new HexButton("");
         rotate.addActionListener(this);
 
-    }
+        bp=new BoardPanel(test, animalTokenMap, this);
+        add(bp);
+        setBackground(Color.WHITE);
 
-    public void paintComponent(Graphics g){
-        super.paintComponent(g);
-        int w=116;
-        int h=116;
-        int i=1;
-        visited =new HashSet<>();
-        putButtons(g, test,800, 450, w, h);
+
 
 
 
     }
+
+
     public void paint(Graphics g){
 
         super.paint(g);
@@ -125,117 +137,119 @@ public class Panel extends JPanel implements ActionListener {
         for (int i=0;i<4;i++){
             add(fourButtonTiles[i]);
             add(fourButtonAnimal[i]);
-            fourButtonTiles[i].setBounds(95, 100+i*100, 87, 87);
+
             //FourButtons[i].paintComponent(g);
-            g.drawImage(tiles4[i], 100, 100+i*100, 75, 87, null);
-            g.drawImage(outline, 100, 100+i*100, 75, 87, null);
+            g.drawImage(tiles4[i], 765, 100+i*100, 75, 87, null);
+            g.drawImage(outline, 765, 100+i*100, 75, 87, null);
+            fourButtonTiles[i].setBounds(760, 100+i*100, 87, 87);
             if (i== numSelectedTile){
-                g.drawImage(selectOutline, 100, 100+i*100, 75, 87, null);
+                g.drawImage(selectOutline, 765, 100+i*100, 75, 87, null);
             }
             if (i==numSelectedAnimal&&drawHighlightAnimal){
-                g.drawImage(animalTokenMap.get(animalToken4[i])[1], 200, 113+i*100, 60, 60, null);
+                g.drawImage(animalTokenMap.get(animalToken4[i])[1], 865, 113+i*100, 60, 60, null);
             }
             else{
-                g.drawImage(animalTokenMap.get(animalToken4[i])[0], 200, 113+i*100, 60, 60, null);
+                g.drawImage(animalTokenMap.get(animalToken4[i])[0], 865, 113+i*100, 60, 60, null);
             }
-            fourButtonAnimal[i].setBounds(270, 113+i*100, 60, 60);
+            fourButtonAnimal[i].setBounds(865, 113+i*100, 60, 60);
 
         }
+
+        g.drawImage(dpad, 800, 600, 240, 240, null);
 
         g.drawImage(rotateImage, 1204, 500, 75, 87, null);
         add(rotate);
         rotate.setBounds(1200, 500, 87, 87);
 
+        //left.showButton();
+        add(left);
+        left.setBounds(847, 698, 50, 50);
+        //right.showButton();
+        add(right);
+        right.setBounds(946, 698, 50, 50);
+        //up.showButton();
+        add(up);
+        up.setBounds(897, 650, 50, 50);
+        //down.showButton();
+        add(down);
+        down.setBounds(897, 747, 50, 50);
+        bp.setBounds(30, 80, 700, 700);
 
     }
 
-    private void putButtons(Graphics g, Node n, int x, int y, int w, int h){
-        if (n==null){
-            return;
-        }
-        if (visited.contains(n)){
-            return;
-        }
-        //System.out.println("here? "+n);
-        //System.out.println(n+" "+x+", "+y);
-        double[]xlst=new double[6];
-        double[]ylst=new double[6];
-        for(int i = 0; i < 6; i++) {
-            double v = i*Math.PI/3;
-            //use this for ^
-            xlst[i] = x+w/2-w/2*Math.cos(v + Math.PI/2);
-            ylst[i] = y+h/2-h/2*Math.sin(v + Math.PI/2);
-            //use this for ------
-            //xPoints[i] = x + (int)Math.round(-width*Math.sin(v + Math.PI/2));
-            //yPoints[i] = y + (int)Math.round(-height*Math.cos(v + Math.PI/2));
-        }
-        double er=w*50*4/58/58;
-        //String s="hh"+id;
-        if (n.getVal()!=null){
-            //s=n.getVal();
-            n.updateNeighbor();
-        }
-        else{
-            if (n.neighborCount()==6){
-                n.updateNeighbor();
-            }
-        }
-        //System.out.println(s+" "+n.neighborCount());
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.rotate(Math.toRadians(n.getRotateAngle()), x + 58, y + 58);
-
-        g2.drawImage(n.getImg(), x+8, y, w*50/58, h, null);
-        if (animalTokenMap.get(n.getAnimal())!=null){
-            g.drawImage(animalTokenMap.get(n.getAnimal())[0], x-17+w*50/116, y-25+h/2, 50, 50, null);
-        }
-        g2.dispose();
-        //g.drawImage(n.getImg(), x+3, y, w*50/58, h,null);
-        //g.drawImage(outline, x-2, y, w*50/58, h, null);
-        //g.drawString(s, x+15, y+30);
-        n.paintComponent(g);
-        n.addActionListener(this);
-        add(n);
-        n.setBounds(x,y,w,h);
-        visited.add(n);
-        //id++;
-
-        int[]nx=new int[6];
-        int[]ny=new int[6];
-        nx[0]=x+w*50/116;
-        nx[1]=x+w*50/58;
-        nx[2]=x+w*50/116;
-        nx[3]=x-w*50/116;
-        nx[4]=x-w*50/58;
-        nx[5]=x-w*50/116;
-        ny[0]=y-h*3/4;
-        ny[1]=y;
-        ny[2]=y+h*3/4;
-        ny[3]=y+h*3/4;
-        ny[4]=y;
-        ny[5]=y-h*3/4;
-        for (int i=0;i<6;i++){
-            putButtons(g, n.getNeighbors()[i], nx[i], ny[i], w, h);
-        }
+    public int getState(){
+        return state;
     }
+
+    public String getCurVal(){
+        return curVal;
+    }
+
+    public String getCurAnimal(){
+        return curAnimal;
+    }
+
+    public void nextA(){
+        state++;
+        animalToken4[numSelectedAnimal]=animalDeck.remove(0);
+        numSelectedAnimal=-1;
+        animalTurn=false;
+        drawHighlightAnimal=false;
+        repaint();
+    }
+    public void next(Node node){
+        nodeSelected=node;
+        state++;
+        //update deck
+        tileName4[numSelectedTile] = tileNames.get(0);
+        tileNames.remove(0);
+        try {
+            tiles4[numSelectedTile] = ImageIO.read(new File("img/Tile/" + tileName4[numSelectedTile] + ".png"));
+        } catch (Exception E) {
+            System.out.println("blah");
+        }
+        numSelectedTile=-1;
+        repaint();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        //System.out.println(1);
-        if ((putTurn||rotateTurn||confirmTurn||animalTurn)==false){
+
+        if (e.getSource().equals(up)){
+            bp.shift(0, -116);
+            repaint();
+            return;
+        }
+        if (e.getSource().equals(down)){
+            bp.shift(0, 116);
+            repaint();
+            return;
+        }
+        if (e.getSource().equals(right)){
+            bp.shift(100, 0);
+            repaint();
+            return;
+        }
+        if (e.getSource().equals(left)){
+            bp.shift(-100, 0);
+            repaint();
+            return;
+        }
+        System.out.println(state);
+        if (state==5){
             pickTurn=true;
+            state=0;
         }
         else{
             pickTurn=false;
         }
-        if (e.getSource().equals(n1)){
-            System.out.println("how tf does this work");
-            return;
-        }
+
 
 
         //select tile
         for (int i=0;i<4;i++){
             HexButton b = fourButtonTiles[i];
-            if (e.getSource().equals(b)&&pickTurn){
+            if (e.getSource().equals(b)&&state==0){
                 System.out.println("FOurbUttons");
                 putTurn=true;
                 pickTurn=false;
@@ -244,13 +258,14 @@ public class Panel extends JPanel implements ActionListener {
                 numSelectedTile =i;
                 numSelectedAnimal=i;
                 nodeSelected=null;
+                state++;
                 repaint();
                 return;
             }
         }
 
         //rotate angle
-        if (nodeSelected!=null && e.getSource().equals(rotate) && rotateTurn){
+        if (nodeSelected!=null && e.getSource().equals(rotate) && state==2){
             nodeSelected.addRotateAngle();
             System.out.println("rotateeeee");
             //rotateTurn=false;
@@ -260,79 +275,65 @@ public class Panel extends JPanel implements ActionListener {
         }
 
         //confirm tile placement
-        if (e.getSource().equals(confirmB)&&confirmTurn){
+        if (e.getSource().equals(confirmB)&&state==2){
             animalTurn=true;
             confirmTurn=false;
             rotateTurn=false;
             drawHighlightAnimal=true;
+            state++;
+            System.out.println(state);
             repaint();
             return;
         }
 
-        //put hexagon on board
-        if (putTurn) {
-            Node n = (Node) e.getSource();
-            if (n != null && !n.getPlaced()) {
-                //System.out.println("plz work");
-                System.out.println(n);
-                n.setVal(curVal);
-                putTurn = false;
-                tileName4[numSelectedTile] = tileNames.get(0);
-                tileNames.remove(0);
-                try {
-                    tiles4[numSelectedTile] = ImageIO.read(new File("img/Tile/" + tileName4[numSelectedTile] + ".png"));
-                } catch (Exception E) {
-                    System.out.println("blah");
-                }
-                rotateTurn = true;
-                numSelectedTile = -1;
-                nodeSelected = n;
-                confirmTurn=true;
-                repaint();
-                return;
-            }
-        }
+        if (state==3){
 
-
-
-        if (animalTurn){
             //pick animal
             if (fourButtonAnimal[numSelectedAnimal].equals(e.getSource())){
                 curAnimal=animalToken4[numSelectedAnimal];
                 //animalToken4[i]=animalDeck.remove(0);
                 animalTurn=false;
                 putAnimalTurn=true;
+                state++;
                 repaint();
                 return;
             }
             //cancel animal
-            if (e.getSource().equals(cancelB)){
+            else if (e.getSource().equals(cancelB)){
                 curAnimal="";
                 numSelectedAnimal=-1;
                 animalTurn=false;
                 drawHighlightAnimal=false;
                 repaint();
+                state+=2;
                 return;
             }
 
         }
 
-
-
-        if (putAnimalTurn){
-            Node n = (Node) e.getSource();
-            if (n.setAnimal(curAnimal)){
+        if (state==4){
+            Node n = bp.getCurNode();
+            if (bp.setCurNodeAnimal(curAnimal)){
                 System.out.println("set animal success");
                 curAnimal="";
                 animalToken4[numSelectedAnimal]=animalDeck.remove(0);
                 numSelectedAnimal=-1;
                 animalTurn=false;
                 drawHighlightAnimal=false;
+                state++;
                 repaint();
                 return;
             }
         }
 
-
+        if (e.getSource().equals(cancelB)&&state==4){
+            curAnimal="";
+            numSelectedAnimal=-1;
+            animalTurn=false;
+            drawHighlightAnimal=false;
+            repaint();
+            state+=1;
+            return;
+        }
     }
 }
