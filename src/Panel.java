@@ -291,7 +291,6 @@ public class Panel extends JPanel implements ActionListener {
             //pick animal
             if (fourButtonAnimal[numSelectedAnimal].equals(e.getSource())){
                 curAnimal=animalToken4[numSelectedAnimal];
-                //animalToken4[i]=animalDeck.remove(0);
                 animalTurn=false;
                 putAnimalTurn=true;
                 state++;
@@ -311,20 +310,7 @@ public class Panel extends JPanel implements ActionListener {
 
         }
 
-        if (state==4){
-            Node n = bp.getCurNode();
-            if (bp.setCurNodeAnimal(curAnimal)){
-                System.out.println("set animal success");
-                curAnimal="";
-                animalToken4[numSelectedAnimal]=animalDeck.remove(0);
-                numSelectedAnimal=-1;
-                animalTurn=false;
-                drawHighlightAnimal=false;
-                state++;
-                repaint();
-                return;
-            }
-        }
+
 
         if (e.getSource().equals(cancelB)&&state==4){
             curAnimal="";

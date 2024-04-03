@@ -45,8 +45,6 @@ public class BoardPanel extends JPanel implements ActionListener {
         if (visited.contains(n)){
             return;
         }
-        //System.out.println("here? "+n);
-        //System.out.println(n+" "+x+", "+y);
         double[]xlst=new double[6];
         double[]ylst=new double[6];
         for(int i = 0; i < 6; i++) {
@@ -58,10 +56,7 @@ public class BoardPanel extends JPanel implements ActionListener {
             //xPoints[i] = x + (int)Math.round(-width*Math.sin(v + Math.PI/2));
             //yPoints[i] = y + (int)Math.round(-height*Math.cos(v + Math.PI/2));
         }
-        double er=w*50*4/58/58;
-        //String s="hh"+id;
         if (n.getVal()!=null){
-            //s=n.getVal();
             n.updateNeighbor();
         }
         else{
@@ -69,7 +64,6 @@ public class BoardPanel extends JPanel implements ActionListener {
                 n.updateNeighbor();
             }
         }
-        //System.out.println(s+" "+n.neighborCount());
         Graphics2D g2 = (Graphics2D) g.create();
         g2.rotate(Math.toRadians(n.getRotateAngle()), x + 58, y + 58);
 
@@ -79,15 +73,11 @@ public class BoardPanel extends JPanel implements ActionListener {
             g.drawImage(animalTokenMap.get(n.getAnimal())[0], x-17+w*50/116, y-25+h/2, 50, 50, null);
         }
         g2.dispose();
-        //g.drawImage(n.getImg(), x+3, y, w*50/58, h,null);
-        //g.drawImage(outline, x-2, y, w*50/58, h, null);
-        //g.drawString(s, x+15, y+30);
         n.paintComponent(g);
         n.addActionListener(this);
         add(n);
         n.setBounds(x,y,w,h);
         visited.add(n);
-        //id++;
 
         int[]nx=new int[6];
         int[]ny=new int[6];
